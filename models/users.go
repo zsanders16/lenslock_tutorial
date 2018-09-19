@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"regexp"
 	"strings"
 
@@ -18,26 +17,26 @@ const hmacSecretKey = "secret-hmac-key"
 
 var (
 	// ErrNotFound means no resource could be found
-	ErrNotFound = errors.New("models: resource not found")
+	ErrNotFound modelError = "models: resource not found"
 	// ErrIDInvalid means user email not found in DB
-	ErrIDInvalid = errors.New("moduls: ID provided was invalid")
+	ErrIDInvalid modelError = "moduls: ID provided was invalid"
 	// ErrPasswordIncorrect means user password is incorrect
-	ErrPasswordIncorrect = errors.New("models: incorrect password provided")
+	ErrPasswordIncorrect modelError = "models: incorrect password provided"
 	// ErrEmailRequired returned when an email is not provided whe user is created
-	ErrEmailRequired = errors.New("models: email address is required")
+	ErrEmailRequired modelError = "models: email address is required"
 	// ErrEmailInvalid is returned if email doesn't match requirements
-	ErrEmailInvalid = errors.New("models: email address is not valid")
+	ErrEmailInvalid modelError = "models: email address is not valid"
 	// ErrEmailTaken is returned when an update or create is attempted with an email that is already used.
-	ErrEmailTaken = errors.New("models: email addres is already taken")
+	ErrEmailTaken modelError = "models: email addres is already taken"
 	// ErrPasswordTooShort returned when password is less than 8 characters
-	ErrPasswordTooShort = errors.New("models: password must be at least 8 characters long")
+	ErrPasswordTooShort modelError = "models: password must be at least 8 characters long"
 	// ErrPasswordRequired is returned is password isn't provided druing creation
-	ErrPasswordRequired = errors.New("models: password is required")
+	ErrPasswordRequired modelError = "models: password is required"
 	// ErrRememberIsRequired returned if user remember hash is not present during create and update
-	ErrRememberIsRequired = errors.New("models: remember token is require")
+	ErrRememberIsRequired modelError = "models: remember token is require"
 	// ErrRememberTokenIsTooShort returned when remember token is not 32 bytes long
-	ErrRememberTokenIsTooShort = errors.New("models: remember token must be 32 bytes long")
-	userPwPepper               = "secret-random-string"
+	ErrRememberTokenIsTooShort modelError = "models: remember token must be 32 bytes long"
+	userPwPepper                          = "secret-random-string"
 )
 
 var _ UserDB = &userGorm{}
@@ -420,4 +419,17 @@ func runUserValFns(user *User, fns ...userValFn) error {
 		}
 	}
 	return nil
+}
+
+type modelError string
+
+func (e modelError) Error() string {
+	return string(e)
+}
+
+func (e modelError) Public() string {
+	s := strings.Replace(string(e), "models: ", "", 1)
+	split := strings.Split(s, " ")
+	split[0] = strings.Title(split[0])
+	return strings.Join(split, " ")
 }

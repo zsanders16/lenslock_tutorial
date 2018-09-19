@@ -11,9 +11,11 @@
   <body>
     {{template "navbar" .}}
     <div class="container-fluid">
-        {{template "yield" .}}
-
-        {{template "footer"}}
+      {{if .Alert}}
+        {{ template "alert" .Alert}}
+      {{end}}
+      {{template "yield" .Yield}}
+      {{template "footer"}}
     </div>
 
     <!-- jquery & Bootstrap JS -->
